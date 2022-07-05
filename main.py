@@ -12,6 +12,8 @@ from models.model_b2 import b2_list
 from models.model_b3 import b3_list
 from models.model_b4 import b4_list
 
+from models.model_c1 import c1_list
+
 
 
 test_losses = {m : [] for m in models}
@@ -25,6 +27,8 @@ for model in b1_list: test_losses["b1"].append(train_test(model))
 for model in b2_list: test_losses["b2"].append(train_test(model))
 for model in b3_list: test_losses["b3"].append(train_test(model))
 for model in b4_list: test_losses["b4"].append(train_test(model))
+
+for model in c1_list: test_losses["c1"].append(train_test(model))
 
 plot_boxes(test_losses)
 # %%

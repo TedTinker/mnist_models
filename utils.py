@@ -1,6 +1,6 @@
 #%%
 
-k = 20
+k = 2
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -69,9 +69,30 @@ def plot_boxes(test_losses):
     plt.xticks(ticks = [i for i in range(1, len(k)+1)], labels = k)
     plt.title("Model losses")
     plt.ylim(bottom=0)
+    
+    between_letters = []
+    ongoing_letter = ""
+    for i, name in enumerate(k):
+        if(name[0] != ongoing_letter):
+            between_letters.append(i+.5)
+            ongoing_letter = name[0]
+    for x in between_letters:
+        plt.axvline(x=x, color = "black")
 
     plt.show()
     plt.close()
+    
+if __name__ == "__main__":
+    plot_boxes({
+        "a1" : [1,2,3,4], 
+        "a2" : [4,5,6,7], 
+        "a3" : [7,8,9,10],
+        "b1" : [1,2,3,4], 
+        "b2" : [4,5,6,7], 
+        "b3" : [7,8,9,10],
+        "c1" : [1,2,3,4], 
+        "c2" : [4,5,6,7], 
+        "c3" : [7,8,9,10]})
         
 def save_model(model, e):
     torch.save(model, "plots/model/{}/{}_{}".format(model.name[:2], model.name, e))

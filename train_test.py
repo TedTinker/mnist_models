@@ -7,7 +7,7 @@ from torch.nn import NLLLoss
 from utils import device, plot_losses, plot_accuracy, save_model
 from get_data import get_batch
 
-def train_test(model, epochs = 10, batch_size = 128, show_after = 100):
+def train_test(model, epochs = 1, batch_size = 128, show_after = 100):
     train_losses = []; test_losses = []
     train_acc = [];    test_acc = []
     
