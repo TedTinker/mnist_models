@@ -1,4 +1,7 @@
 #%%
+
+k = 20
+
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 if(device.type == "cpu"):   print("\n\nAAAAAAAUGH! CPU! >:C\n")
@@ -19,9 +22,8 @@ if not os.path.exists('plots'):
     os.makedirs('plots')
 
 folders = ["loss", "accuracy", "model"]
-models = ["a1", "a2", "a3", "a4",
-          "b1", "b2", "b3", "b4", 
-          "c1", "c2", "c3", "c4"]
+models = os.listdir("models")
+models = [m[6:-3] for m in models if m != "__pycache__"]
 
 for folder in folders:
     if not os.path.exists('plots/{}'.format(folder)):
@@ -42,7 +44,7 @@ import matplotlib.pyplot as plt
 def plot_losses(model, e, train_losses, test_losses):
     plt.plot(train_losses, color = "blue", label='Train')
     plt.plot(test_losses,  color = "red",  label='Test')
-    plt.title("{}: {} epochs loss".format(model.k, e))
+    plt.title("{}: {} epochs loss".format(model.name, e))
     plt.legend()
     
     plt.savefig("plots/loss/{}/{}_{}".format(model.name[:2], model.name, e))
@@ -52,7 +54,7 @@ def plot_losses(model, e, train_losses, test_losses):
 def plot_accuracy(model, e, train_acc, test_acc):
     plt.plot(train_acc, color = "blue", label='Train')
     plt.plot(test_acc,  color = "red",  label='Test')
-    plt.title("{}: {} epochs accuracy".format(model.k, e))
+    plt.title("{}: {} epochs accuracy".format(model.name, e))
     plt.ylim((0,100))
     plt.legend()
     
@@ -61,8 +63,16 @@ def plot_accuracy(model, e, train_acc, test_acc):
     plt.close()
     
 def plot_boxes(test_losses):
-    pass
-    
+    k = list(test_losses.keys())
+    v = list(test_losses.values())
+    plt.boxplot(v, vert = True)
+    plt.xticks(ticks = [i for i in range(1, len(k)+1)], labels = k)
+    plt.title("Model losses")
+    plt.ylim(bottom=0)
+
+    plt.show()
+    plt.close()
+        
 def save_model(model, e):
     torch.save(model, "plots/model/{}/{}_{}".format(model.name[:2], model.name, e))
 # %%
