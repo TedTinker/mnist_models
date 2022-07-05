@@ -1,6 +1,7 @@
 #%%
 import torch
 from torch import nn 
+import torchgan.layers as gnn
 from torch.optim import Adam
 from torchinfo import summary as torch_summary
 
@@ -16,23 +17,12 @@ class C1(nn.Module):
         self.name = "c1_{}".format(str(k+1).zfill(3))
         self.k = k
                 
-        self.cnn = nn.Sequential(
-            nn.Conv2d(
-                in_channels = 1, 
-                out_channels = 16, 
-                kernel_size = 3,
-                padding = 1,
-                padding_mode = "reflect"),
-            nn.LeakyReLU(),
-            nn.MaxPool2d(kernel_size = 2),
-            nn.Conv2d(
-                in_channels = 16, 
-                out_channels = 16, 
-                kernel_size = 3,
-                padding = 1,
-                padding_mode = "reflect"),
-            nn.LeakyReLU(),
-            nn.MaxPool2d(kernel_size = 2))
+        self.cnn = gnn.ResidualBlock2d(
+            filters = [1, 4, 8], 
+            kernels = [3, 3], 
+            paddings = [1, 1], 
+            nonlinearity = nn.LeakyReLU(), 
+            last_nonlinearity = nn.LeakyReLU())
         
         example = torch.zeros((1, 1, 28, 28))
         example = self.cnn(example).flatten(1)
@@ -41,10 +31,6 @@ class C1(nn.Module):
         self.lin = nn.Sequential(
             nn.Linear(
                 in_features = quantity,
-                out_features = 128),
-            nn.LeakyReLU(),
-            nn.Linear(
-                in_features = 128,
                 out_features = 10),
             nn.LogSoftmax(1))
         
