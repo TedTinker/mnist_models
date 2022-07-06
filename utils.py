@@ -1,7 +1,7 @@
 #%%
 
-k = 10
-epochs = 100
+k = 2
+epochs = 1
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,8 +38,8 @@ for m in models:
 import matplotlib.pyplot as plt
 
 def plot_loss_acc(model, e, train_losses, test_losses, train_acc, test_acc):
-    plt.figure(figsize=(7,7))
-    _, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots()
+    fig.set_figsize=(7,7)
     ax2 = ax1.twinx()
     ax1.plot(train_losses, color = "b", label = 'Train loss')
     ax1.plot(test_losses,  color = "r", label = 'Test loss')
@@ -137,7 +137,10 @@ def plot_boxes_acc(train_acc, test_acc):
     for x in between_letters:
         plt.axvline(x=x, color = "black", linewidth = 1, linestyle = "-")
     plt.legend([train["boxes"][0], test["boxes"][0]], ['Train accuracies', 'Test accuracies'], loc='lower left')
-    plt.ylim((70,100))
+    
+    minimums = [min(l) for l in list(train_acc.values()) + list(test_acc.values())]
+    minimum = min(minimums)
+    plt.ylim((minimum,100))
 
     plt.savefig("plots/boxes_acc")
     plt.show()
