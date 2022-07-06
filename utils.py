@@ -140,7 +140,7 @@ def plot_boxes_acc(train_acc, test_acc):
     
     minimums = [min(l) for l in list(train_acc.values()) + list(test_acc.values())]
     minimum = min(minimums)
-    plt.ylim((minimum,100))
+    plt.ylim((minimum-1,101))
 
     plt.savefig("plots/boxes_acc")
     plt.show()
