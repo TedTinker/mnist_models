@@ -55,7 +55,6 @@ class B2(nn.Module):
         x = x.permute(0, -1, 1, 2)
         x = self.cnn(x).flatten(1)
         y = self.lin(x)
-        y = (y+1)/2
         return(y)
 
 b2_list = []

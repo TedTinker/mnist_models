@@ -31,7 +31,6 @@ class A1(nn.Module):
         x = (x*2) - 1
         x = x.flatten(1)
         y = self.lin(x)
-        y = (y+1)/2
         return(y)
 
 a1_list = []

@@ -60,7 +60,6 @@ class C4(nn.Module):
         x = x.permute(0, -1, 1, 2)
         x = self.cnn(x).flatten(1)
         y = self.lin(x)
-        y = (y+1)/2
         return(y)
 
 c4_list = []
