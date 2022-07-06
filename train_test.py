@@ -42,5 +42,5 @@ def train_test(model, M, K, E, batch_size = 128, show_after = 100):
                 #save_model(model, e)
 
                 
-    return(train_losses[-1], test_losses[-1])
+    return(train_losses[-1], test_losses[-1], train_acc[-1], test_acc[-1])
 # %%

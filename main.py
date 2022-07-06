@@ -1,7 +1,7 @@
 #%%
 from tqdm import tqdm
 import enlighten
-from utils import models, plot_boxes, k, epochs
+from utils import models, plot_boxes_loss, plot_boxes_acc, k, epochs
 from train_test import train_test
 
 from models.model_a1 import a1_list
@@ -20,6 +20,8 @@ from models.model_c1 import c1_list
 
 train_losses = {m : [] for m in models}
 test_losses  = {m : [] for m in models}
+train_acces  = {m : [] for m in models}
+test_acces   = {m : [] for m in models}
 
 models.sort()
 model_lists = [a1_list, a2_list, a3_list, a4_list,
@@ -33,9 +35,12 @@ E = manager.counter(total = epochs,      desc = "Epochs:", unit = "ticks", color
 
 for list, name in zip(model_lists, models):
     for model in list:
-        train_loss, test_loss = train_test(model, M, K, E)
+        train_loss, test_loss, train_acc, test_acc = train_test(model, M, K, E)
         train_losses[name].append(train_loss)
         test_losses[name].append(test_loss)
+        train_acces[name].append(train_acc)
+        test_acces[name].append(test_acc)
     
-plot_boxes(train_losses, test_losses)
+plot_boxes_loss(train_losses, test_losses)
+plot_boxes_acc(train_acces, test_acces)
 # %%

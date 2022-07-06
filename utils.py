@@ -1,7 +1,7 @@
 #%%
 
-k = 10
-epochs = 100
+k = 2
+epochs = 2
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -60,7 +60,7 @@ def plot_loss_acc(model, e, train_losses, test_losses, train_acc, test_acc):
     plt.show()
     plt.close()
     
-def plot_boxes(train_losses, test_losses):
+def plot_boxes_loss(train_losses, test_losses):
     train_c = (0,0,1,.1)
     k_train = list(train_losses.keys())
     v_train = list(train_losses.values())
@@ -96,9 +96,52 @@ def plot_boxes(train_losses, test_losses):
             ongoing_letter = name[0]
     for x in between_letters:
         plt.axvline(x=x, color = "black", linewidth = 1, linestyle = "-")
-    plt.legend([train["boxes"][0], test["boxes"][0]], ['Train', 'Test'], loc='lower left')
+    plt.legend([train["boxes"][0], test["boxes"][0]], ['Train losses', 'Test losses'], loc='lower left')
 
-    plt.savefig("plots/boxes")
+    plt.savefig("plots/boxes_loss")
+    plt.show()
+    plt.close()
+    
+def plot_boxes_acc(train_acc, test_acc):
+    train_c = (0,0,1,.1)
+    k_train = list(train_acc.keys())
+    v_train = list(train_acc.values())
+    k_train, v_train = zip(*sorted(zip(k_train, v_train)))
+    train = plt.boxplot(v_train, vert = True, widths = .75,
+        patch_artist=True,
+        boxprops=dict(facecolor=train_c, color=train_c),
+        capprops=dict(color=train_c),
+        whiskerprops=dict(color=train_c),
+        flierprops=dict(color=train_c, markeredgecolor=train_c),
+        medianprops=dict(color=train_c))
+    
+    test_c = (1,0,0,.5)
+    k_test = list(test_acc.keys())
+    v_test = list(test_acc.values())
+    k_test, v_test = zip(*sorted(zip(k_test, v_test)))
+    test = plt.boxplot(v_test, vert = True, widths = .25,
+        patch_artist=True,
+        boxprops=dict(facecolor=test_c, color=test_c),
+        capprops=dict(color=test_c),
+        whiskerprops=dict(color=test_c),
+        flierprops=dict(color=test_c, markeredgecolor=test_c),
+        medianprops=dict(color=test_c))
+    
+    plt.xticks(ticks = [i for i in range(1, len(k_test)+1)], labels = k_test)
+    plt.title("Model accuracies")
+    
+    between_letters = []
+    ongoing_letter = ""
+    for i, name in enumerate(k_test):
+        if(name[0] != ongoing_letter):
+            between_letters.append(i+.5)
+            ongoing_letter = name[0]
+    for x in between_letters:
+        plt.axvline(x=x, color = "black", linewidth = 1, linestyle = "-")
+    plt.legend([train["boxes"][0], test["boxes"][0]], ['Train accuracies', 'Test accuracies'], loc='upper left')
+    plt.ylim((0,100))
+
+    plt.savefig("plots/boxes_acc")
     plt.show()
     plt.close()
     
