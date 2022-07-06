@@ -19,15 +19,15 @@ class B3(nn.Module):
         self.cnn = nn.Sequential(
             nn.Conv2d(
                 in_channels = 1, 
-                out_channels = 4, 
+                out_channels = 16, 
                 kernel_size = 3,
                 padding = 1,
                 padding_mode = "reflect"),
             nn.LeakyReLU(),
             nn.MaxPool2d(kernel_size = 2),
             nn.Conv2d(
-                in_channels = 4, 
-                out_channels = 4, 
+                in_channels = 16, 
+                out_channels = 16, 
                 kernel_size = 3,
                 padding = 1,
                 padding_mode = "reflect"),
@@ -41,10 +41,6 @@ class B3(nn.Module):
         self.lin = nn.Sequential(
             nn.Linear(
                 in_features = quantity,
-                out_features = 128),
-            nn.LeakyReLU(),
-            nn.Linear(
-                in_features = 128,
                 out_features = 10),
             nn.LogSoftmax(1))
         

@@ -9,15 +9,15 @@ utils = True
 try: from utils import device, init_weights, k
 except: utils = False; k = 20
 
-class C1(nn.Module):
+class C5(nn.Module):
     
     def __init__(self, k):
         super().__init__()
         
-        self.name = "c1_{}".format(str(k+1).zfill(3))
+        self.name = "c5_{}".format(str(k+1).zfill(3))
         self.k = k
         
-        depth = 2
+        depth = 4
         self.cnn = nn.Sequential(
             gnn.DenseBlock2d(
                 depth = depth,
@@ -32,7 +32,25 @@ class C1(nn.Module):
                 out_channels = 16,
                 kernel = 1,
                 batchnorm = False),
-            nn.MaxPool2d(kernel_size = 2))
+            nn.MaxPool2d(kernel_size = 2),
+            gnn.SelfAttention2d(
+                input_dims = 16),
+            gnn.DenseBlock2d(
+                depth = depth,
+                in_channels = 16,
+                growth_rate = 16,
+                block = gnn.BasicBlock2d,
+                kernel = 3,
+                padding = 1,
+                batchnorm = False),
+            gnn.TransitionBlock2d(
+                in_channels = 16 + 16*depth,
+                out_channels = 16,
+                kernel = 1,
+                batchnorm = False),
+            nn.MaxPool2d(kernel_size = 2),
+            gnn.SelfAttention2d(
+                input_dims = 16))
         
         example = torch.zeros((1, 1, 28, 28))
         example = self.cnn(example)
@@ -41,6 +59,10 @@ class C1(nn.Module):
         self.lin = nn.Sequential(
             nn.Linear(
                 in_features = quantity,
+                out_features = 64),
+            nn.LeakyReLU(),
+            nn.Linear(
+                in_features = 64,
                 out_features = 10),
             nn.LogSoftmax(1))
         
@@ -57,12 +79,12 @@ class C1(nn.Module):
         y = self.lin(x)
         return(y)
 
-c1_list = []
+c5_list = []
 for k_ in range(k):
-    c1_list.append(C1(k_))
+    c5_list.append(C5(k_))
     
 if __name__ == "__main__":
-    print(c1_list[0])
+    print(c5_list[0])
     print()
-    print(torch_summary(c1_list[0], (10, 28, 28, 1)))
+    print(torch_summary(c5_list[0], (10, 28, 28, 1)))
 # %%

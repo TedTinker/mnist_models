@@ -1,7 +1,6 @@
 #%%
 import torch
 from torch import nn 
-import torchgan.layers as gnn
 from torch.optim import Adam
 from torchinfo import summary as torch_summary
 
@@ -9,38 +8,47 @@ utils = True
 try: from utils import device, init_weights, k
 except: utils = False; k = 20
 
-class C1(nn.Module):
+class B5(nn.Module):
     
     def __init__(self, k):
         super().__init__()
         
-        self.name = "c1_{}".format(str(k+1).zfill(3))
+        self.name = "b4_{}".format(str(k+1).zfill(3))
         self.k = k
-        
-        depth = 2
+                
         self.cnn = nn.Sequential(
-            gnn.DenseBlock2d(
-                depth = depth,
-                in_channels = 1,
-                growth_rate = 16,
-                block = gnn.BasicBlock2d,
-                kernel = 3,
+            nn.Conv2d(
+                in_channels = 1, 
+                out_channels = 64, 
+                kernel_size = 3,
                 padding = 1,
-                batchnorm = False),
-            gnn.TransitionBlock2d(
-                in_channels = 1 + 16*depth,
-                out_channels = 16,
-                kernel = 1,
-                batchnorm = False),
+                padding_mode = "reflect"),
+            nn.LeakyReLU(),
+            nn.MaxPool2d(kernel_size = 2),
+            nn.Conv2d(
+                in_channels = 64, 
+                out_channels = 64, 
+                kernel_size = 3,
+                padding = 1,
+                padding_mode = "reflect"),
+            nn.LeakyReLU(),
             nn.MaxPool2d(kernel_size = 2))
         
         example = torch.zeros((1, 1, 28, 28))
-        example = self.cnn(example)
-        quantity = example.flatten(1).shape[-1]
+        example = self.cnn(example).flatten(1)
+        quantity = example.shape[-1]
         
         self.lin = nn.Sequential(
             nn.Linear(
                 in_features = quantity,
+                out_features = 256),
+            nn.LeakyReLU(),
+            nn.Linear(
+                in_features = 256,
+                out_features = 256),
+            nn.LeakyReLU(),
+            nn.Linear(
+                in_features = 256,
                 out_features = 10),
             nn.LogSoftmax(1))
         
@@ -57,12 +65,12 @@ class C1(nn.Module):
         y = self.lin(x)
         return(y)
 
-c1_list = []
+b5_list = []
 for k_ in range(k):
-    c1_list.append(C1(k_))
+    b5_list.append(B5(k_))
     
 if __name__ == "__main__":
-    print(c1_list[0])
+    print(b5_list[0])
     print()
-    print(torch_summary(c1_list[0], (10, 28, 28, 1)))
+    print(torch_summary(b5_list[0], (10, 28, 28, 1)))
 # %%

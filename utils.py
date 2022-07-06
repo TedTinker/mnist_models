@@ -57,7 +57,7 @@ def plot_loss_acc(model, e, train_losses, test_losses, train_acc, test_acc):
     plt.close()
     
 def plot_boxes_loss(train_losses, test_losses):
-    plt.figure(figsize=(12,7))
+    plt.figure(figsize=(15,7))
     train_c = (0,0,1,.1)
     k_train = list(train_losses.keys())
     v_train = list(train_losses.values())
@@ -100,7 +100,7 @@ def plot_boxes_loss(train_losses, test_losses):
     plt.close()
     
 def plot_boxes_acc(train_acc, test_acc):
-    plt.figure(figsize=(12,7))
+    plt.figure(figsize=(15,7))
     train_c = (0,0,1,.1)
     k_train = list(train_acc.keys())
     v_train = list(train_acc.values())

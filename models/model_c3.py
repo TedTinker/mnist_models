@@ -16,22 +16,37 @@ class C3(nn.Module):
         
         self.name = "c3_{}".format(str(k+1).zfill(3))
         self.k = k
-                
+        
+        depth = 4
         self.cnn = nn.Sequential(
-            gnn.ResidualBlock2d(
-                filters = [1, 4, 8], 
-                kernels = [3, 3], 
-                paddings = [1, 1], 
-                nonlinearity = nn.LeakyReLU(), 
-                last_nonlinearity = nn.LeakyReLU()),
+            gnn.DenseBlock2d(
+                depth = depth,
+                in_channels = 1,
+                growth_rate = 16,
+                block = gnn.BasicBlock2d,
+                kernel = 3,
+                padding = 1,
+                batchnorm = False),
+            gnn.TransitionBlock2d(
+                in_channels = 1 + 16*depth,
+                out_channels = 16,
+                kernel = 1,
+                batchnorm = False),
             nn.MaxPool2d(kernel_size = 2),
-            gnn.ResidualBlock2d(
-                filters = [8, 8, 8], 
-                kernels = [3, 3], 
-                paddings = [1, 1], 
-                nonlinearity = nn.LeakyReLU(), 
-                last_nonlinearity = nn.LeakyReLU()),
-            nn.MaxPool2d(kernel_size = 2))
+            gnn.DenseBlock2d(
+                depth = depth,
+                in_channels = 16,
+                growth_rate = 16,
+                block = gnn.BasicBlock2d,
+                kernel = 3,
+                padding = 1,
+                batchnorm = False),
+            gnn.TransitionBlock2d(
+                in_channels = 16 + 16*depth,
+                out_channels = 16,
+                kernel = 1,
+                batchnorm = False),
+            nn.MaxPool2d(kernel_size = 2),)
         
         example = torch.zeros((1, 1, 28, 28))
         example = self.cnn(example)
@@ -40,10 +55,6 @@ class C3(nn.Module):
         self.lin = nn.Sequential(
             nn.Linear(
                 in_features = quantity,
-                out_features = 32),
-            nn.LeakyReLU(),
-            nn.Linear(
-                in_features = 32,
                 out_features = 10),
             nn.LogSoftmax(1))
         

@@ -16,21 +16,22 @@ class C2(nn.Module):
         
         self.name = "c2_{}".format(str(k+1).zfill(3))
         self.k = k
-                
+        
+        depth = 4
         self.cnn = nn.Sequential(
-            gnn.ResidualBlock2d(
-                filters = [1, 4, 8], 
-                kernels = [3, 3], 
-                paddings = [1, 1], 
-                nonlinearity = nn.LeakyReLU(), 
-                last_nonlinearity = nn.LeakyReLU()),
-            nn.MaxPool2d(kernel_size = 2),
-            gnn.ResidualBlock2d(
-                filters = [8, 8, 8], 
-                kernels = [3, 3], 
-                paddings = [1, 1], 
-                nonlinearity = nn.LeakyReLU(), 
-                last_nonlinearity = nn.LeakyReLU()),
+            gnn.DenseBlock2d(
+                depth = depth,
+                in_channels = 1,
+                growth_rate = 16,
+                block = gnn.BasicBlock2d,
+                kernel = 3,
+                padding = 1,
+                batchnorm = False),
+            gnn.TransitionBlock2d(
+                in_channels = 1 + 16*depth,
+                out_channels = 16,
+                kernel = 1,
+                batchnorm = False),
             nn.MaxPool2d(kernel_size = 2))
         
         example = torch.zeros((1, 1, 28, 28))
