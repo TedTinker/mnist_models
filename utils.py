@@ -21,7 +21,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 if not os.path.exists('plots'):
     os.makedirs('plots')
 
-folders = ["loss", "accuracy", "model"]
+folders = ["loss_acc", "model"]
 models = os.listdir("models")
 models = [m[6:-3] for m in models if m != "__pycache__"]
 
@@ -41,24 +41,16 @@ for folder in folders:
 
 import matplotlib.pyplot as plt
 
-def plot_losses(model, e, train_losses, test_losses):
-    plt.plot(train_losses, color = "blue", label='Train')
-    plt.plot(test_losses,  color = "red",  label='Test')
-    plt.title("{}: {} epochs loss".format(model.name, e))
-    plt.legend()
-    
-    plt.savefig("plots/loss/{}/{}_{}".format(model.name[:2], model.name, e))
-    plt.show()
-    plt.close()
-    
-def plot_accuracy(model, e, train_acc, test_acc):
-    plt.plot(train_acc, color = "blue", label='Train')
-    plt.plot(test_acc,  color = "red",  label='Test')
-    plt.title("{}: {} epochs accuracy".format(model.name, e))
+def plot_loss_acc(model, e, train_losses, test_losses, train_acc, test_acc):
+    plt.plot(train_losses, color = "b", label='Train loss')
+    plt.plot(test_losses,  color = "r", label='Test loss')
+    plt.plot(train_acc, color = "c", label='Train acc')
+    plt.plot(test_acc,  color = "m", label='Test acc')
+    plt.title("{}: {} epochs loss and accuracy".format(model.name, e))
     plt.ylim((0,100))
     plt.legend()
     
-    plt.savefig("plots/accuracy/{}/{}_{}".format(model.name[:2], model.name, e))
+    plt.savefig("plots/loss_acc/{}/{}_{}".format(model.name[:2], model.name, e))
     plt.show()
     plt.close()
     
@@ -68,7 +60,6 @@ def plot_boxes(test_losses):
     plt.boxplot(v, vert = True)
     plt.xticks(ticks = [i for i in range(1, len(k)+1)], labels = k)
     plt.title("Model losses")
-    plt.ylim(bottom=0)
     
     between_letters = []
     ongoing_letter = ""

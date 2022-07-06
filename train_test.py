@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 from torch.nn import NLLLoss
 
-from utils import device, plot_losses, plot_accuracy, save_model
+from utils import device, plot_loss_acc, save_model
 from get_data import get_batch
 
 def train_test(model, epochs = 100, batch_size = 128, show_after = 100):
@@ -31,10 +31,9 @@ def train_test(model, epochs = 100, batch_size = 128, show_after = 100):
             test_acc.append(100*sum(accurate)/len(accurate))
 
             if(e%show_after == 0 or e==epochs):
-                plot_losses(model, e, train_losses, test_losses)
-                plot_accuracy(model, e, train_acc, test_acc)
+                plot_loss_acc(model, e, train_losses, test_losses, train_acc, test_acc)
                 #save_model(model, e)
                 print()
                 
-    return(test_losses[-1])
+    return(train_losses[-1], test_losses[-1])
 # %%
