@@ -1,7 +1,7 @@
 #%%
 
-k = 2
-epochs = 2
+k = 10
+epochs = 100
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -22,28 +22,24 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 if not os.path.exists('plots'):
     os.makedirs('plots')
 
-folders = ["loss_acc", "model"]
 models = os.listdir("models")
 models = [m[6:-3] for m in models if m != "__pycache__"]
 
-for folder in folders:
-    if not os.path.exists('plots/{}'.format(folder)):
-        os.makedirs('plots/{}'.format(folder))
-        for m in models:
-            if not os.path.exists('plots/{}/{}'.format(folder, m)):
-                os.makedirs('plots/{}/{}'.format(folder, m))
+for m in models:
+    if not os.path.exists('plots/{}'.format(m)):
+        os.makedirs('plots/{}'.format(m))
 
-for folder in folders:
-    for m in models:
-        for f in os.listdir("plots/{}/{}".format(folder, m)):
-            os.remove("plots/{}/{}/{}".format(folder, m, f))
+for m in models:
+    for file in os.listdir("plots/{}".format(m)):
+        os.remove("plots/{}/{}".format(m, file))
     
     
 
 import matplotlib.pyplot as plt
 
 def plot_loss_acc(model, e, train_losses, test_losses, train_acc, test_acc):
-    fig, ax1 = plt.subplots()
+    plt.figure(figsize=(7,7))
+    _, ax1 = plt.subplots()
     ax2 = ax1.twinx()
     ax1.plot(train_losses, color = "b", label = 'Train loss')
     ax1.plot(test_losses,  color = "r", label = 'Test loss')
@@ -56,11 +52,12 @@ def plot_loss_acc(model, e, train_losses, test_losses, train_acc, test_acc):
     ax1.legend(loc='upper left')
     ax2.legend(loc='lower left')
     
-    plt.savefig("plots/loss_acc/{}/{}_{}".format(model.name[:2], model.name, e))
-    plt.show()
+    plt.savefig("plots/{}/{}_{}".format(model.name[:2], model.name, e))
+    #plt.show()
     plt.close()
     
 def plot_boxes_loss(train_losses, test_losses):
+    plt.figure(figsize=(12,7))
     train_c = (0,0,1,.1)
     k_train = list(train_losses.keys())
     v_train = list(train_losses.values())
@@ -103,6 +100,7 @@ def plot_boxes_loss(train_losses, test_losses):
     plt.close()
     
 def plot_boxes_acc(train_acc, test_acc):
+    plt.figure(figsize=(12,7))
     train_c = (0,0,1,.1)
     k_train = list(train_acc.keys())
     v_train = list(train_acc.values())
@@ -138,25 +136,10 @@ def plot_boxes_acc(train_acc, test_acc):
             ongoing_letter = name[0]
     for x in between_letters:
         plt.axvline(x=x, color = "black", linewidth = 1, linestyle = "-")
-    plt.legend([train["boxes"][0], test["boxes"][0]], ['Train accuracies', 'Test accuracies'], loc='upper left')
-    plt.ylim((0,100))
+    plt.legend([train["boxes"][0], test["boxes"][0]], ['Train accuracies', 'Test accuracies'], loc='lower left')
+    plt.ylim((70,100))
 
     plt.savefig("plots/boxes_acc")
     plt.show()
     plt.close()
-    
-if __name__ == "__main__":
-    plot_boxes({
-        "a1" : [1,2,3,4], 
-        "a2" : [4,5,6,7], 
-        "a3" : [7,8,9,10],
-        "b1" : [1,2,3,4], 
-        "b2" : [4,5,6,7], 
-        "b3" : [7,8,9,10],
-        "c1" : [1,2,3,4], 
-        "c2" : [4,5,6,7], 
-        "c3" : [7,8,9,10]})
-        
-def save_model(model, e):
-    torch.save(model, "plots/model/{}/{}_{}".format(model.name[:2], model.name, e))
 # %%

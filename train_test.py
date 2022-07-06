@@ -4,10 +4,10 @@ import torch
 import torch.nn.functional as F
 from torch.nn import NLLLoss
 
-from utils import device, plot_loss_acc, save_model, k, epochs
+from utils import device, plot_loss_acc, k, epochs
 from get_data import get_batch
 
-def train_test(model, M, K, E, batch_size = 128, show_after = 100):
+def train_test(model, M, K, E, batch_size = 128, show_after = 99999):
     train_losses = []; test_losses = []
     train_acc = [];    test_acc = []
     
@@ -39,8 +39,6 @@ def train_test(model, M, K, E, batch_size = 128, show_after = 100):
                     if(K.count == k):
                         K.count = 0; K.start = time.time()
                         M.update()
-                #save_model(model, e)
 
-                
     return(train_losses[-1], test_losses[-1], train_acc[-1], test_acc[-1])
 # %%

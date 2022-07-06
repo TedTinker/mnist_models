@@ -17,16 +17,18 @@ class C1(nn.Module):
         self.name = "c1_{}".format(str(k+1).zfill(3))
         self.k = k
                 
-        self.cnn = gnn.ResidualBlock2d(
-            filters = [1, 4, 8], 
-            kernels = [3, 3], 
-            paddings = [1, 1], 
-            nonlinearity = nn.LeakyReLU(), 
-            last_nonlinearity = nn.LeakyReLU())
+        self.cnn = nn.Sequential(
+            gnn.ResidualBlock2d(
+                filters = [1, 4, 8], 
+                kernels = [3, 3], 
+                paddings = [1, 1], 
+                nonlinearity = nn.LeakyReLU(), 
+                last_nonlinearity = nn.LeakyReLU()),
+            nn.MaxPool2d(kernel_size = 2))
         
         example = torch.zeros((1, 1, 28, 28))
-        example = self.cnn(example).flatten(1)
-        quantity = example.shape[-1]
+        example = self.cnn(example)
+        quantity = example.flatten(1).shape[-1]
         
         self.lin = nn.Sequential(
             nn.Linear(
