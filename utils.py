@@ -1,7 +1,7 @@
 #%%
 
-k = 2
-epochs = 2
+k = 50
+epochs = 500
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -13,6 +13,20 @@ def init_weights(m):
         torch.nn.init.xavier_normal_(m.weight)
         m.bias.data.fill_(0.01)
     except: pass
+    
+# Monitor GPU memory.
+def get_free_mem(string = ""):
+    r = torch.cuda.memory_reserved(0)
+    a = torch.cuda.memory_allocated(0)
+    f = r-a  # free inside reserved
+    print("\n{}: {}.\n".format(string, f))
+
+# Remove from GPU memory.
+def delete_these(verbose = False, *args):
+    if(verbose): get_free_mem("Before deleting")
+    del args
+    torch.cuda.empty_cache()
+    if(verbose): get_free_mem("After deleting")
     
     
     

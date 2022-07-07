@@ -2,7 +2,7 @@
 import torch
 import torch.nn.functional as F
 
-from utils import device, plot_loss_acc, save_model, epochs
+from utils import plot_loss_acc, save_model, epochs
 from get_data import get_batch
 
 def train_test(model, E, batch_size = 128, show_after = 99999):
@@ -14,7 +14,7 @@ def train_test(model, E, batch_size = 128, show_after = 99999):
         model.train()
         x, y = get_batch(k_ = model.k, batch_size = batch_size, test = False)
         predicted = model(x)
-        loss = F.nll_loss(predicted, y.to(device))
+        loss = F.nll_loss(predicted, y)
         model.opt.zero_grad()
         loss.backward()
         model.opt.step()
@@ -26,7 +26,7 @@ def train_test(model, E, batch_size = 128, show_after = 99999):
             model.eval()
             x, y = get_batch(k_ = model.k, test = True)
             predicted = model(x)
-            loss = F.nll_loss(predicted, y.to(device))
+            loss = F.nll_loss(predicted, y)
             test_losses.append(loss.item())
             accurate = [True if torch.argmax(p).item() == y[i].item() else False for i, p in enumerate(predicted)]
             test_acc.append(100*sum(accurate)/len(accurate))
@@ -43,7 +43,7 @@ def train_test_short(model, batch_size = 128):
     model.train()
     x, y = get_batch(k_ = model.k, batch_size = batch_size, test = False)
     predicted = model(x)
-    loss = F.nll_loss(predicted, y.to(device))
+    loss = F.nll_loss(predicted, y)
     train_loss = loss.item()
     accurate = [True if torch.argmax(p).item() == y[i].item() else False for i, p in enumerate(predicted)]
     train_acc = 100*sum(accurate)/len(accurate)
@@ -52,7 +52,7 @@ def train_test_short(model, batch_size = 128):
         model.eval()
         x, y = get_batch(k_ = model.k, test = True)
         predicted = model(x)
-        loss = F.nll_loss(predicted, y.to(device))
+        loss = F.nll_loss(predicted, y)
         test_loss = loss.item()
         accurate = [True if torch.argmax(p).item() == y[i].item() else False for i, p in enumerate(predicted)]
         test_acc = 100*sum(accurate)/len(accurate)

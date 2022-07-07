@@ -38,6 +38,8 @@ for list in model_lists:
     for model in list:
         if(model.name in trained_models):
             model = load_model(model)
+            
+            
 
 manager = enlighten.get_manager()
 M = manager.counter(total = len(models), desc = "Models:", unit = "ticks", color = "red")

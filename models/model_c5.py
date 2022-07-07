@@ -6,8 +6,10 @@ from torch.optim import Adam
 from torchinfo import summary as torch_summary
 
 utils = True
-try: from utils import device, init_weights, k
-except: utils = False; k = 20
+try: from utils import device, init_weights, k, delete_these
+except: 
+    utils = False; k = 20
+    def delete_these(verbose, *args): pass
 
 class C5(nn.Module):
     
@@ -77,7 +79,8 @@ class C5(nn.Module):
         x = x.permute(0, -1, 1, 2)
         x = self.cnn(x).flatten(1)
         y = self.lin(x)
-        return(y)
+        delete_these(False, x)
+        return(y.cpu())
 
 c5_list = []
 for k_ in range(k):

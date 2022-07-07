@@ -4,8 +4,10 @@ from torch.optim import Adam
 from torchinfo import summary as torch_summary
 
 utils = True
-try: from utils import device, init_weights, k
-except: utils = False; k = 20
+try: from utils import device, init_weights, k, delete_these
+except: 
+    utils = False; k = 20
+    def delete_these(verbose, *args): pass
 
 class A5(nn.Module):
     
@@ -47,7 +49,8 @@ class A5(nn.Module):
         x = (x*2) - 1
         x = x.flatten(1)
         y = self.lin(x)
-        return(y)
+        delete_these(False, x)
+        return(y.cpu())
 
 a5_list = []
 for k_ in range(k):
