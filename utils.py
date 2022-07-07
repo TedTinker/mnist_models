@@ -1,7 +1,7 @@
 #%%
 
-k = 20
-epochs = 100
+k = 25
+epochs = 500
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
