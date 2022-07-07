@@ -1,8 +1,9 @@
 #%%
-from tqdm import tqdm
 import enlighten
-from utils import models, plot_boxes_loss, plot_boxes_acc, k, epochs
-from train_test import train_test
+import time
+
+from utils import models, trained_models, load_model, plot_boxes_loss, plot_boxes_acc, k, epochs
+from train_test import train_test, train_test_short
 
 from models.model_a1 import a1_list
 from models.model_a2 import a2_list
@@ -29,10 +30,14 @@ test_losses  = {m : [] for m in models}
 train_acces  = {m : [] for m in models}
 test_acces   = {m : [] for m in models}
 
-models.sort()
 model_lists = [a1_list, a2_list, a3_list, a4_list, a5_list,
                b1_list, b2_list, b3_list, b4_list, b5_list,
                c1_list, c2_list, c3_list, c4_list, c5_list]
+
+for list in model_lists:
+    for model in list:
+        if(model.name in trained_models):
+            model = load_model(model)
 
 manager = enlighten.get_manager()
 M = manager.counter(total = len(models), desc = "Models:", unit = "ticks", color = "red")
@@ -41,11 +46,19 @@ E = manager.counter(total = epochs,      desc = "Epochs:", unit = "ticks", color
 
 for list, name in zip(model_lists, models):
     for model in list:
-        train_loss, test_loss, train_acc, test_acc = train_test(model, M, K, E)
+        if(model.name in trained_models):
+            train_loss, test_loss, train_acc, test_acc = train_test_short(model)
+        else: 
+            train_loss, test_loss, train_acc, test_acc = train_test(model, E)
         train_losses[name].append(train_loss)
         test_losses[name].append(test_loss)
         train_acces[name].append(train_acc)
         test_acces[name].append(test_acc)
+        E.count = 0; E.start = time.time()
+        K.update()
+        if(K.count == k):
+            K.count = 0; K.start = time.time()
+            M.update()
     
 plot_boxes_loss(train_losses, test_losses)
 plot_boxes_acc(train_acces, test_acces)

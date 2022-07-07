@@ -13,7 +13,7 @@ class B5(nn.Module):
     def __init__(self, k):
         super().__init__()
         
-        self.name = "b4_{}".format(str(k+1).zfill(3))
+        self.name = "b5_{}".format(str(k+1).zfill(3))
         self.k = k
                 
         self.cnn = nn.Sequential(

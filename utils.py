@@ -1,7 +1,7 @@
 #%%
 
-k = 25
-epochs = 500
+k = 2
+epochs = 2
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -19,20 +19,24 @@ def init_weights(m):
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE" 
 
-if not os.path.exists('plots'):
-    os.makedirs('plots')
+if not os.path.exists('plots'): os.makedirs('plots')
+if not os.path.exists('trained'): os.makedirs('trained')
 
 models = os.listdir("models")
 models = [m[6:-3] for m in models if m != "__pycache__"]
+models.sort()
+trained_models = os.listdir("trained")
+trained_models = [m[:-3] for m in trained_models if m != "__pycache__"]
+trained_models.sort()
 
 for m in models:
-    if not os.path.exists('plots/{}'.format(m)):
-        os.makedirs('plots/{}'.format(m))
+    if not os.path.exists('plots/{}'.format(m)): os.makedirs('plots/{}'.format(m))
 
 for m in models:
-    for file in os.listdir("plots/{}".format(m)):
-        os.remove("plots/{}/{}".format(m, file))
-    
+    if(not m in trained_models):
+        for file in os.listdir("plots/{}".format(m)): os.remove("plots/{}/{}".format(m, file))
+
+#%%
     
 
 import matplotlib.pyplot as plt
@@ -140,9 +144,17 @@ def plot_boxes_acc(train_acc, test_acc):
     
     minimums = [min(l) for l in list(train_acc.values()) + list(test_acc.values())]
     minimum = min(minimums)
-    plt.ylim((minimum-1,101))
+    plt.ylim((minimum-3,101))
+    plt.axhline(100, color = "black", linewidth = 1, linestyle = "--")
 
     plt.savefig("plots/boxes_acc")
     plt.show()
     plt.close()
+    
+def save_model(model):
+    torch.save(model.state_dict(), "trained/{}.pt".format(model.name))
+    
+def load_model(model):
+    model.load_state_dict(torch.load("trained/{}.pt".format(model.name)))
+    return(model)
 # %%
